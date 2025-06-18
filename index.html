@@ -1,62 +1,431 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="scroll-smooth">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="icon" href="Image/DSC_0638.JPG">
-    <title>Seye Oyewole</title>
-    <link  rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <link rel="stylesheet" href="main.css">
+    <!-- Chosen Palette: Warm Neutrals - The application uses #FDFBF8 as the main background, #334155 for primary text, #14B8A6 for interactive elements and highlights (primary accent), and #F59E0B as a secondary accent for specific data points or calls to attention. This creates a clean, harmonious, and professional look. -->
+    <!-- Application Structure Plan: The SPA is organized into thematic sections accessible via a sticky navigation bar, allowing for both linear consumption and quick jumps. The structure is as follows:
+        1. Hero Section: Introduces Exercia's DEX, highlighting user trust, control, and the seamless transition from P2P. Features key stats.
+        2. Our Advantage: Combines the previous "Challenge" and "Solution" to present Exercia's unique value proposition: user-friendliness, low fees, and core principles. Includes the gas fee comparison chart.
+        3. How It Works: Simplifies the "Three-Click Trade" process, emphasizing ease of use.
+        4. Join The Future: Presents market positioning and future growth projections, acting as a call to action.
+        This revised structure focuses on a standard marketing homepage flow: Hook -> Value Proposition -> Simplicity -> Future/Call to Action. It condenses information from the original slides into a more direct and product-centric presentation. -->
+    <!-- Visualization & Content Choices:
+        - Report Info: "10,000 active users," "billions lost in CEX." -> Goal: Inform/Impact. -> Viz/Presentation Method: Large, bold static numbers with descriptive text in the Hero section. -> Interaction: None, designed for immediate impact. -> Justification: Quickly communicates scale and the problem Exercia solves.
+        - Report Info: Gas fee comparison ($50+ vs. <$1, 50x cost reduction) (from Slide 5). -> Goal: Compare/Quantify Benefit. -> Viz/Presentation Method: Horizontal Bar Chart (Chart.js) and prominent text callout in "Our Advantage." -> Interaction: Static chart displaying the comparison. -> Justification: Visually demonstrates a significant financial benefit to the user.
+        - Report Info: "Three clicks to complete any trade" (from Slide 6). -> Goal: Illustrate Process/Simplicity. -> Viz/Presentation Method: HTML/CSS based conceptual flow diagram with sequential steps in "How It Works." -> Interaction: Steps highlight on hover, reinforcing simplicity. -> Justification: Breaks down a complex process into easily digestible steps, showcasing user-friendliness.
+        - Report Info: "50,000 active users," "20% market share" projection (from Slide 9). -> Goal: Project/Impact/Motivate. -> Viz/Presentation Method: Prominent numerical display within "Join The Future" section. -> Interaction: None. -> Justification: Creates excitement and confidence about Exercia's future.
+        - Library/Method: Vanilla JS for all interactive elements (navigation, tabs). Chart.js for the bar chart. Tailwind CSS for all layout and styling. -->
+    <title>Exercia DEX: Simple, Secure, Decentralized Trading</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #FDFBF8;
+            color: #334155;
+            line-height: 1.6;
+        }
+        .container {
+            max-width: 1200px;
+        }
+        .nav-link {
+            transition: all 0.2s ease-in-out;
+            position: relative;
+        }
+        .nav-link.active, .nav-link:hover {
+            color: #14B8A6;
+        }
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 2px;
+            bottom: -5px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: #14B8A6;
+            transition: width 0.2s ease-in-out;
+        }
+        .nav-link.active::after {
+            width: 100%;
+        }
+        .section-heading {
+            font-size: 2.5rem;
+            font-weight: 700;
+            text-align: center;
+            margin-bottom: 1.5rem;
+            color: #334155;
+        }
+        .sub-heading {
+            font-size: 1.875rem; /* text-3xl */
+            font-weight: 600;
+            margin-bottom: 1rem;
+            color: #475569;
+        }
+        .button-primary {
+            background-color: #14B8A6;
+            color: #FFFFFF;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+            font-weight: 600;
+            transition: background-color 0.2s ease-in-out;
+        }
+        .button-primary:hover {
+            background-color: #0D9488;
+        }
+        .feature-card {
+            background-color: #FFFFFF;
+            padding: 2rem;
+            border-radius: 0.75rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.06);
+            border: 1px solid #E2E8F0;
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 250px; /* Base height for chart */
+            max-height: 400px;
+            background-color: #FFFFFF;
+            padding: 1rem;
+            border-radius: 0.75rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.06);
+            border: 1px solid #E2E8F0;
+        }
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 300px;
+            }
+        }
+        .three-click-step {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            gap: 0.5rem;
+            transition: transform 0.2s ease-in-out;
+        }
+        .three-click-step:hover {
+            transform: translateY(-5px);
+        }
+        .three-click-icon {
+            font-size: 2rem;
+            color: #F59E0B;
+            transition: color 0.2s ease-in-out;
+        }
+        .three-click-step:hover .three-click-icon {
+            color: #D97706;
+        }
+        .arrow-right {
+            font-size: 2.5rem;
+            color: #94A3B8;
+            margin: 0 1rem;
+        }
+         @media (max-width: 767px) {
+            .three-click-flow {
+                flex-direction: column;
+                align-items: center;
+            }
+            .arrow-right {
+                transform: rotate(90deg);
+                margin: 1rem 0;
+            }
+        }
+    </style>
 </head>
-<body>
-    <header>
-        <div class="menu-btn">
-            <span class="menu-btn_burger"></span>
-        </div>
-        <nav class="nav">
-            <ul class="menu-nav">
-                <li class="menu-nav_item active">
-                    <a href="index.html" class="menu-nav_link">Home</a>
-                </li>
-                <li class="menu-nav_item">
-                    <a href="about.html" class="menu-nav_link">About Me</a>
-                </li>
-                <li class="menu-nav_item">
-                    <a href="projects.html" class="menu-nav_link">My Projects</a>
-                </li>
-                <li class="menu-nav_item">
-                    <a href="contact.html" class="menu-nav_link">Contact Me</a>
-                </li>
-            </ul>  
-        </nav>
-    </header>
-    <main>
-        <section class="home">
-            <h2>Hi My Name Is</h2>
-            <h1 class="home_name">Oyewole <span class="home_name--last">Seye</span></h1>
-            <h2>
-                Web Developer,Programmer,Animator & Photgrapher
-            </h2>                                        
-            <div class="social-icons">
-                <a href="#!">
-                    <i class="fab fa-x fa-2x"></i>
-                </a>
-                <a href="#!">
-                    <i class="fab fa-facebook fa-2x"></i>
-                </a>
-                <a href="#!">
-                    <i class="fab fa-instagram fa-2x"></i>
-                </a>
-                <a href="#!">
-                    <i class="fab fa-github fa-2x"></i>
-                </a>
-                <a href="#!">
-                    <i class="fab fa-linkedin fa-2x"></i>
-                </a>
+<body class="bg-fdfbf8 text-slate-700">
+
+    <!-- Navbar -->
+    <nav class="bg-white/80 backdrop-blur-lg sticky top-0 z-50 shadow-md">
+        <div class="container mx-auto px-6 py-4 flex justify-between items-center">
+            <a href="#" class="text-3xl font-bold text-slate-800 tracking-tight">Exercia<span class="text-teal-600">.io</span></a>
+            <div class="hidden md:flex space-x-8">
+                <a href="#hero" class="nav-link active">Home</a>
+                <a href="#advantage" class="nav-link">Our Advantage</a>
+                <a href="#how-it-works" class="nav-link">How It Works</a>
+                <a href="#join-future" class="nav-link">Join The Future</a>
             </div>
-            <footer>&copy; Copyright 2025 Oyewole Oluseye</footer>
+            <div class="md:hidden">
+                <button id="mobile-menu-button" class="text-slate-600 focus:outline-none">
+                    <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path></svg>
+                </button>
+            </div>
+        </div>
+        <div id="mobile-menu" class="hidden md:hidden bg-white shadow-lg">
+            <a href="#hero" class="block py-3 px-6 text-sm font-medium text-slate-700 hover:bg-teal-50">Home</a>
+            <a href="#advantage" class="block py-3 px-6 text-sm font-medium text-slate-700 hover:bg-teal-50">Our Advantage</a>
+            <a href="#how-it-works" class="block py-3 px-6 text-sm font-medium text-slate-700 hover:bg-teal-50">How It Works</a>
+            <a href="#join-future" class="block py-3 px-6 text-sm font-medium text-slate-700 hover:bg-teal-50">Join The Future</a>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="py-16">
+
+        <!-- Hero Section -->
+        <section id="hero" class="container mx-auto px-6 mb-24 text-center scroll-mt-20">
+            <h1 class="text-5xl md:text-6xl font-extrabold text-slate-800 leading-tight mb-6">Trade Crypto Simply & Securely with <span class="text-teal-600">Exercia DEX</span></h1>
+            <p class="text-xl md:text-2xl text-slate-600 max-w-4xl mx-auto mb-12">
+                Exercia, trusted by <span class="font-bold text-amber-600">10,000 active P2P users</span>, is evolving. We're bringing the power of decentralized trading directly to you, combining our commitment to user control and privacy with cutting-edge DEX capabilities. No more lost funds due to centralized failures – with Exercia DEX, you're always in control.
+            </p>
+            
+            <div class="grid md:grid-cols-2 gap-8 max-w-3xl mx-auto mb-12">
+                <div class="feature-card text-center">
+                    <p class="text-4xl font-bold text-teal-600 mb-2">10,000+</p>
+                    <p class="text-lg text-slate-700">Trusted P2P Users</p>
+                </div>
+                <div class="feature-card text-center">
+                    <p class="text-4xl font-bold text-teal-600 mb-2">You Control</p>
+                    <p class="text-lg text-slate-700">Your Own Funds</p>
+                </div>
+            </div>
+
+            <p class="text-xl md:text-2xl text-slate-600 max-w-4xl mx-auto mb-10">
+                Experience the freedom of peer-to-peer trading now automated and secured by smart contracts. It's like having your private coffee shop trade, but instantly and reliably on the blockchain, without anyone holding your money.
+            </p>
+            <a href="#advantage" class="button-primary inline-block text-lg">Discover Exercia DEX</a>
         </section>
+
+        <!-- Our Advantage Section -->
+        <section id="advantage" class="container mx-auto px-6 mb-24 scroll-mt-20">
+            <h2 class="section-heading">Exercia's Core Advantage: <span class="text-teal-600">Why We're Different</span></h2>
+            <p class="text-center max-w-3xl mx-auto mb-12 text-slate-600">
+                While others build for experts, we build for everyone. Exercia bridges the gap, offering powerful decentralized trading with unparalleled simplicity, privacy, and cost-efficiency.
+            </p>
+
+            <div class="grid md:grid-cols-2 gap-12 items-start">
+                <!-- Unique Approach -->
+                <div>
+                    <h3 class="sub-heading text-slate-800 mb-4">Designed for You, Not Just Experts</h3>
+                    <p class="text-slate-700 mb-4">
+                        We understand the complexities of DeFi. That's why we're keeping everything our users love about Exercia – the privacy, the security, and the intuitive interface – while seamlessly integrating the power of decentralized trading. Access DeFi opportunities directly from the wallet you already trust. We're building a DEX that welcomes newcomers, not one that scares them away.
+                    </p>
+                    <ul class="list-disc list-inside text-slate-600 space-y-2">
+                        <li>Seamless transition from P2P to DEX.</li>
+                        <li>Retains core Exercia values: privacy & security.</li>
+                        <li>Intuitive interface for DeFi access.</li>
+                    </ul>
+                </div>
+
+                <!-- Technical Foundation - Low Fees -->
+                <div>
+                    <h3 class="sub-heading text-slate-800 mb-4">Experience Ultra-Low Trading Fees</h3>
+                    <p class="text-slate-700 mb-4">
+                        Built on Ethereum with advanced Layer 2 solutions, Exercia DEX dramatically reduces transaction costs. While other platforms can charge $50+ per trade, our users will pay under $1. This 50x cost reduction changes the game for frequent traders.
+                    </p>
+                    <div class="chart-container">
+                        <canvas id="gasFeeChart"></canvas>
+                    </div>
+                    <p class="text-center text-sm text-slate-500 mt-4">Average Gas Fee Comparison (USD)</p>
+                    <p class="text-slate-700 mt-6">
+                        Our smart contracts are engineered for efficiency, handling automated trading, liquidity management, and secure escrow services with the same robust principles you expect from Exercia.
+                    </p>
+                </div>
+            </div>
+        </section>
+        
+        <!-- How It Works Section -->
+        <section id="how-it-works" class="container mx-auto px-6 mb-24 scroll-mt-20">
+            <h2 class="section-heading">Trading Made Simple: Your <span class="text-amber-600">Three-Click Promise</span></h2>
+            <p class="text-center max-w-3xl mx-auto mb-12 text-slate-600">
+                We surveyed our users, and simplicity was key. That's why we've designed Exercia DEX to make any trade achievable in just three intuitive clicks. No complex interfaces, no hidden steps.
+            </p>
+
+            <div class="feature-card flex flex-col items-center p-6 bg-amber-50 border-amber-200">
+                <h3 class="text-xl font-bold text-amber-800 mb-6">Get Started in Just 3 Simple Steps</h3>
+                <div class="three-click-flow flex flex-wrap justify-center items-center gap-6 md:gap-8">
+                    <div class="three-click-step">
+                        <span class="three-click-icon">1. &#x1F4B0;</span>
+                        <span class="font-semibold text-slate-700">Connect Wallet & Select Assets</span>
+                        <span class="text-sm text-slate-600">Link your existing Exercia wallet and choose what you want to trade.</span>
+                    </div>
+                    <span class="arrow-right hidden md:block">&rarr;</span>
+                     <div class="arrow-right block md:hidden">&#x2193;</div>
+                    <div class="three-click-step">
+                        <span class="three-click-icon">2. &#x1F504;</span>
+                        <span class="font-semibold text-slate-700">Review & Confirm Swap</span>
+                        <span class="text-sm text-slate-600">See all trade details clearly and approve the transaction.</span>
+                    </div>
+                    <span class="arrow-right hidden md:block">&rarr;</span>
+                    <div class="arrow-right block md:hidden">&#x2193;</div>
+                    <div class="three-click-step">
+                        <span class="three-click-icon">3. &#x2705;</span>
+                        <span class="font-semibold text-slate-700">Trade Complete!</span>
+                        <span class="text-sm text-slate-600">Your new assets appear directly in your wallet.</span>
+                    </div>
+                </div>
+            </div>
+            <p class="text-center text-slate-700 mt-8 max-w-2xl mx-auto">
+                We provide in-app tutorials and email guides to ensure no one is left behind. Exercia DEX offers a familiar dashboard that opens up a whole world of DeFi opportunities for everyone.
+            </p>
+        </section>
+
+        <!-- Join The Future Section -->
+        <section id="join-future" class="container mx-auto px-6 mb-16 text-center scroll-mt-20">
+            <h2 class="section-heading">Join the Future: Accessible Decentralized Finance Starts Here</h2>
+            <p class="text-center max-w-3xl mx-auto mb-12 text-slate-600">
+                Exercia isn't just another DEX; we're changing the game entirely. We're building the platform that regular people can actually use, focusing on privacy and a truly user-friendly experience.
+            </p>
+
+            <div class="grid md:grid-cols-2 gap-8 max-w-3xl mx-auto mb-12">
+                <div class="feature-card text-center bg-teal-50 border-teal-200">
+                    <p class="text-4xl font-bold text-teal-600 mb-2">50,000</p>
+                    <p class="text-lg text-slate-700">Projected Users (12 Months)</p>
+                </div>
+                <div class="feature-card text-center bg-teal-50 border-teal-200">
+                    <p class="text-4xl font-bold text-teal-600 mb-2">20%</p>
+                    <p class="text-lg text-slate-700">Market Share (Privacy-Focused DEXs)</p>
+                </div>
+            </div>
+            <p class="text-xl md:text-2xl text-slate-600 max-w-4xl mx-auto mb-8">
+                This is more than just numbers; it's about empowering everyone with access to powerful financial tools. We're building Exercia's future, and with it, the future of accessible decentralized finance.
+            </p>
+            <a href="#hero" class="button-primary inline-block text-lg">Start Trading Now</a>
+        </section>
+
     </main>
-    <script src="main.js"></script>
+
+    <!-- Footer -->
+    <footer class="py-8 text-center text-slate-500 border-t border-slate-200 mt-12">
+        <p>&copy; 2025 Exercia. All Rights Reserved. Privacy-focused. User-friendly. Built for real people.</p>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // Mobile menu toggle
+            const mobileMenuButton = document.getElementById('mobile-menu-button');
+            const mobileMenu = document.getElementById('mobile-menu');
+            mobileMenuButton.addEventListener('click', () => {
+                mobileMenu.classList.toggle('hidden');
+            });
+
+            // Smooth scroll for nav links and active state
+            const navLinks = document.querySelectorAll('nav a');
+            const sections = document.querySelectorAll('section');
+
+            const observerOptions = {
+                root: null,
+                rootMargin: '-20% 0px -80% 0px', // Adjusted to activate earlier
+                threshold: 0 // Observe as soon as element enters root
+            };
+
+            const sectionObserver = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        navLinks.forEach(link => {
+                            link.classList.remove('active');
+                            if (link.getAttribute('href') === `#${entry.target.id}`) {
+                                link.classList.add('active');
+                            }
+                        });
+                    }
+                });
+            }, observerOptions);
+
+            sections.forEach(section => {
+                sectionObserver.observe(section);
+            });
+
+            navLinks.forEach(link => {
+                link.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    const targetId = link.getAttribute('href').substring(1);
+                    const targetSection = document.getElementById(targetId);
+                    if (targetSection) {
+                        window.scrollTo({
+                            top: targetSection.offsetTop - document.querySelector('nav').offsetHeight,
+                            behavior: 'smooth'
+                        });
+                        // Close mobile menu if open
+                        mobileMenu.classList.add('hidden');
+                    }
+                });
+            });
+
+            // Chart.js for Gas Fee Comparison
+            const ctxGasFee = document.getElementById('gasFeeChart').getContext('2d');
+            const gasFeeChart = new Chart(ctxGasFee, {
+                type: 'bar',
+                data: {
+                    labels: ['Uniswap', 'Exercia (Projected)'],
+                    datasets: [{
+                        label: 'Average Gas Fee (USD)',
+                        data: [50, 1], // Data from the script ($50+ vs under $1)
+                        backgroundColor: [
+                            '#F59E0B', // Amber for Uniswap (existing, less ideal)
+                            '#14B8A6'  // Teal for Exercia (our solution)
+                        ],
+                        borderColor: [
+                            '#D97706',
+                            '#0D9488'
+                        ],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    indexAxis: 'y', // Horizontal bar chart
+                    scales: {
+                        x: {
+                            beginAtZero: true,
+                            title: {
+                                display: true,
+                                text: 'Gas Fee (USD)',
+                                color: '#475569'
+                            },
+                            ticks: {
+                                color: '#475569'
+                            },
+                            grid: {
+                                color: '#E2E8F0'
+                            }
+                        },
+                        y: {
+                            ticks: {
+                                color: '#475569',
+                                callback: function(value, index, values) {
+                                    const label = this.getLabelForValue(value);
+                                    if (label.length > 16) { // Wrap long labels
+                                        return label.split(' ');
+                                    }
+                                    return label;
+                                }
+                            },
+                            grid: {
+                                display: false
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            display: false // No need for legend as bars are labeled
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    let label = context.dataset.label || '';
+                                    if (label) {
+                                        label += ': ';
+                                    }
+                                    if (context.parsed.x !== null) {
+                                        label += '$' + context.parsed.x.toFixed(2);
+                                    }
+                                    return label;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        });
+    </script>
 </body>
 </html>
+ 
